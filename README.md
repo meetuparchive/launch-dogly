@@ -1,4 +1,4 @@
-# Launch Dogly [![Build Status](https://travis-ci.com/meetup/launch-dogly.svg?branch=master)](https://travis-ci.com/meetup/launch-dogly)
+# Launch Dogly [![Build Status](https://travis-ci.com/meetup/launch-dogly.svg?branch=master)](https://travis-ci.com/meetup/launch-dogly) [![Coverage Status](https://coveralls.io/repos/github/meetup/launch-dogly/badge.svg)](https://coveralls.io/github/meetup/launch-dogly)
 
 > 🚀 🌑 🐶 A Launch Darkly webhook handler that records changes as datadog events
 
