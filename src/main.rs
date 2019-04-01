@@ -84,7 +84,7 @@ fn record(
         .json(&event)
         .send()
     {
-        eprintln!("failed to record event: {}", err)
+        log::error!("failed to record event: {}", err)
     }
 }
 
@@ -98,7 +98,7 @@ fn handler(
     } = envy::from_env::<Env>().map_err(|e| failure::err_msg(e.to_string()))?;
 
     if !authenticated(&request, &ld_secret) {
-        eprintln!("request was not authenticated");
+        log::warn!("request was not authenticated");
         return Ok(json!({
             "message": "Request not authenticated"
         }));
