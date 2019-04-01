@@ -1,0 +1,27 @@
+service: launch-dogly
+provider:
+  name: aws
+  runtime: rust
+  memorySize: 128
+  stackTags:
+    'mup:owner': 'platform-services'
+    'mup:productName': '${self:service}'
+  environment:
+    # https://app.launchdarkly.com/pro/integrations/webhooks/new
+    LD_SECRET: ${env:LD_SECRET}
+    # https://app.datadoghq.com/account/settings#api
+    DD_API_KEY: ${env:DD_API_KEY}
+
+package:
+  individually: true
+
+plugins:
+  - serverless-rust
+
+functions:
+  recorder:
+    handler: recorder
+    events:
+      - http:
+          path: '/'
+          method: POST
