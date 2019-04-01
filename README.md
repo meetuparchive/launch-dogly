@@ -5,7 +5,7 @@
 
 ## 🤔 about
 
-Your obvervability and monitoring strategy should include visibilty to notable
+Your obvervability and monitoring strategy should include visibilty into notable
 events in your system in order to understand system triggers. In a continuously deployed
 system, production testing often happens at runtime via feature flag toggles.
 
