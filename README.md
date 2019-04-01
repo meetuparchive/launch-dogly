@@ -55,3 +55,14 @@ restrictions actions to flags and a subset of target actions.
 ```
 
 Deployments expect an `DD_API_KEY` and `LD_SECRET` environment variable.
+
+## 🤸 Usage
+
+In Datadog's event stream you can search for `sources:launch-darkly`. The following metric tags
+are extracted from LaunchDarkly events
+
+| Tag       | Description                                                                      |
+|-----------|----------------------------------------------------------------------------------|
+| `kind`    | The kind of target entity Launch Darkly was triggered for, currently only "flag" |
+| `name`    | The name of the flag                                                             |
+| `action`  | Action that triggered the change                                                 |
