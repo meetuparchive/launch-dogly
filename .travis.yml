@@ -45,7 +45,7 @@ install: |
     RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin -f
   fi
   # install npx
-  npm install -g npx
+  npm i --silent -g npx
 
 script:
   # fail fast if build fails
