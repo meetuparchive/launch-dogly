@@ -77,3 +77,4 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
+      rust: stable

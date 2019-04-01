@@ -18,7 +18,7 @@ struct Env {
     dd_api_key: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Payload {
     accesses: Vec<Access>,
@@ -26,21 +26,19 @@ struct Payload {
     name: String,
     description: String,
     title_verb: String,
-    title: String,
     member: Member,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Member {
     first_name: String,
     last_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 struct Access {
     action: String,
-    resource: String,
 }
 
 fn main() {
@@ -48,17 +46,9 @@ fn main() {
     lambda!(handler)
 }
 
-/// Record webhook as Datadog event
-fn record(
-    payload: Payload,
-    dd_api_key: &str,
-) {
-    if payload.kind != "flag" {
-        return;
-    }
-
-    // https://docs.datadoghq.com/api/?lang=python#post-an-event
-    let event = json!({
+// https://docs.datadoghq.com/api/?lang=python#post-an-event
+fn event(payload: Payload) -> serde_json::Value {
+    json!({
         "title": format!(
             "{} {} {} {}",
             payload.member.first_name,
@@ -73,15 +63,24 @@ fn record(
              format!("action:{}", payload.accesses[0].action)
          ],
          "source_type_name": "launch-darkly"
-    });
+    })
+}
 
-    log::debug!("recording event {:#?}", event);
+/// Record webhook as Datadog event
+fn record(
+    payload: Payload,
+    dd_api_key: &str,
+) {
+    if payload.kind != "flag" {
+        return;
+    }
+
     if let Err(err) = Client::new()
         .post(&format!(
             "https://app.datadoghq.com/api/v1/events?api_key={}",
             dd_api_key
         ))
-        .json(&event)
+        .json(&event(payload))
         .send()
     {
         log::error!("failed to record event: {}", err)
@@ -127,8 +126,8 @@ fn authenticated(
     request
         .headers()
         .get("X-LD-Signature")
+        .and_then(|value| Vec::from_hex(value).ok())
         .iter()
-        .filter_map(|value| Vec::from_hex(value).ok())
         .any(|signature| {
             let mut mac = Hmac::new(Sha256::new(), &secret.as_bytes());
             mac.input(&request.body());
@@ -147,6 +146,21 @@ mod tests {
     }
 
     #[test]
+    fn creates_event() {
+        let payload = serde_json::from_str::<Payload>(include_str!("../tests/data/payload.json"))
+            .expect("failed to parse payload");
+        assert_eq!(
+            event(payload),
+            json!({
+                "title": "Reese Applebaum changed the name of Testing",
+                "text": "- Changed the name from ~~Test~~ to *Testing*",
+                "tags": ["kind:environment", "name:Testing", "action:updateName"],
+                "source_type_name": "launch-darkly"
+            })
+        );
+    }
+
+    #[test]
     fn authenticates_requests() {
         let body = include_str!("../tests/data/payload.json");
 
@@ -160,19 +174,5 @@ mod tests {
             .body(body.into())
             .expect("failed to generate request");
         assert!(authenticated(&request, "secret"))
-    }
-
-    #[test]
-    #[ignore]
-    fn handler_handles() {
-        let request = Request::default();
-        let expected = json!({
-        "message": "Go Serverless v1.0! Your function executed successfully!"
-        })
-        .into_response();
-        let response = handler(request, Context::default())
-            .expect("expected Ok(_) value")
-            .into_response();
-        assert_eq!(response.body(), expected.body())
     }
 }
