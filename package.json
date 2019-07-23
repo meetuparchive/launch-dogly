@@ -1,7 +1,7 @@
 {
   "devDependencies": {
-    "serverless": "^1.40.0",
-    "serverless-rust": "^0.3.2"
+    "serverless": "^1.47.0",
+    "serverless-rust": "^0.3.6"
   },
   "name": "launch-dogly"
 }

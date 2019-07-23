@@ -9,7 +9,7 @@ use hex::FromHex;
 use lambda_http::{lambda, IntoResponse, Request, RequestExt};
 use lambda_runtime::{error::HandlerError, Context};
 use reqwest::Client;
-use serde_derive::Deserialize;
+use serde::Deserialize;
 use serde_json::json;
 
 #[derive(Deserialize)]
