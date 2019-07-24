@@ -11,6 +11,7 @@ provider:
     LD_SECRET: ${env:LD_SECRET}
     # https://app.datadoghq.com/account/settings#api
     DD_API_KEY: ${env:DD_API_KEY}
+    RUST_LOG: info
 
 package:
   individually: true
